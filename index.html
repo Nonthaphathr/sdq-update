@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ศูนย์อัปเดต · ระบบประเมิน SDQ และ EQ</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:'Sarabun','Noto Sans Thai',Tahoma,sans-serif;background:#F4FBF8;color:#12372E}
+.w{max-width:760px;margin:0 auto;padding:20px 14px 60px}h1{font-size:22px;margin:6px 0 2px}.m{color:#5B7A70;font-size:14px}
+.c{background:#fff;border:1px solid #D5EAE2;border-radius:14px;padding:16px;margin:14px 0}
+.o{border:2px solid #F59E0B;background:#FFFBEB}
+button,a.b{font:inherit;border:1px solid #BFE0D5;background:#fff;border-radius:10px;padding:9px 16px;cursor:pointer;text-decoration:none;color:#12372E;display:inline-block;margin:4px 6px 4px 0}
+.p{background:#12A583;color:#fff;border-color:#12A583;font-size:16px}
+.v{font-size:26px;font-weight:700}.n{display:inline-block;padding:2px 10px;border-radius:99px;background:#DDF7EC;font-size:13px}
+ul{padding-left:20px;margin:6px 0}input{font:inherit;width:100%;padding:9px;border:1px solid #BFE0D5;border-radius:10px}
+.st{display:flex;gap:10px;margin:10px 0}.st i{flex:0 0 28px;height:28px;border-radius:50%;background:#12A583;color:#fff;display:grid;place-items:center;font-style:normal;font-weight:700}
+</style></head><body><div class="w">
+<h1>ศูนย์อัปเดต · ระบบประเมิน SDQ และ EQ</h1><div class="m">โรงเรียนกระดุมทองวิทยา · อัปเดตโค้ดโดยคัดลอก-วาง แล้วสร้างเวอร์ชันใหม่ ข้อมูลในชีตไม่หาย</div>
+<div class="c"><div class="m">เวอร์ชันล่าสุด</div><div class="v" id="ver">…</div><span class="n" id="dt"></span><ul id="notes"></ul></div>
+<div class="c o"><b>ขั้นที่ 1 · เปิดหน้าแก้โค้ดของคุณ</b>
+<div id="mine" class="m" style="margin:6px 0">กำลังตรวจ…</div>
+<input id="lk" placeholder="วางลิงก์หน้าแก้โค้ด (…/projects/…/edit) ครั้งเดียว ระบบจะจำไว้" style="display:none">
+<div><a class="b p" id="open" href="https://script.google.com/home" target="_blank" rel="noopener">↗ เปิดหน้าแก้โค้ด</a></div>
+<div class="st"><i>2</i><div><b>คัดลอก แล้ววางทับทีละไฟล์</b><div class="m">กดคัดลอก → ในหน้าแก้โค้ดคลิกไฟล์นั้น → Ctrl+A → Ctrl+V → Ctrl+S (ทำให้ครบทั้ง 2 ไฟล์)</div>
+<button onclick="cp('src/Code.gs')">📋 คัดลอก Code.gs</button><button onclick="cp('src/index.html')">📋 คัดลอก index.html</button><div class="m" id="msg"></div></div></div>
+<div class="st"><i>3</i><div><b>สร้างเวอร์ชันใหม่ (เจ้าของชีตเป็นคนทำ)</b><div class="m">การทำให้ใช้งานได้ › จัดการการทำให้ใช้งานได้ › ไอคอนดินสอ › เวอร์ชัน: เวอร์ชันใหม่ › ทำให้ใช้งานได้ · ลิงก์เดิมใช้ต่อได้</div></div></div></div>
+</div><script>
+const $=id=>document.getElementById(id),K='sdq_editor_id',RE=/^[A-Za-z0-9_-]{20,}$/;
+function ls(f){try{return f()}catch(e){return ''}}
+function setId(id){ if(!RE.test(id)) return false; ls(()=>localStorage.setItem(K,id)); show(id); return true; }
+function show(id){ $('open').href='https://script.google.com/home/projects/'+id+'/edit'; $('mine').textContent='✓ จำโปรเจกต์ของคุณแล้ว'; $('lk').style.display='none'; }
+(function(){ const q=new URLSearchParams(location.search).get('p'); if(q&&setId(q)) history.replaceState(null,'',location.pathname);
+ const id=ls(()=>localStorage.getItem(K)); if(id&&RE.test(id)) show(id); else { $('mine').textContent='ยังไม่ทราบโปรเจกต์ของคุณ — เปิดจากเมนู “อัปเดตระบบ” ในแอป หรือวางลิงก์หน้าแก้โค้ดด้านล่างครั้งเดียว'; $('lk').style.display='block'; } })();
+$('lk').oninput=e=>{ const m=e.target.value.match(/projects\/([A-Za-z0-9_-]{20,})/); if(m) setId(m[1]); };
+fetch('version.json?t='+Date.now()).then(r=>r.json()).then(v=>{ $('ver').textContent=v.version; $('dt').textContent=v.date||''; $('notes').innerHTML=(v.notes||[]).map(n=>'<li>'+n.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))+'</li>').join(''); }).catch(()=>{ $('ver').textContent='อ่านไม่ได้'; });
+async function cp(p){ $('msg').textContent='กำลังดึง…'; try{ const r=await fetch(p+'?t='+Date.now()); if(!r.ok) throw 0; const t=await r.text();
+  try{ await navigator.clipboard.writeText(t); }catch(e){ const a=document.createElement('textarea'); a.value=t; a.style.cssText='position:fixed;left:-9999px'; document.body.appendChild(a); a.select(); document.execCommand('copy'); a.remove(); }
+  $('msg').textContent='คัดลอก '+p.split('/').pop()+' แล้ว — ไปวางทับในหน้าแก้โค้ด'; }catch(e){ $('msg').textContent='คัดลอกไม่สำเร็จ ลองใหม่'; } }
+</script></body></html>
